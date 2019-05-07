@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    <div id="beforeLeaf">
+        <p>beforeLeaf的第一个儿子</p>
+        <p>beforeLeaf的第二个儿子</p>
+    </div>
+
+    <div id="afterLeaf">
+        <ul>
+            <li>afterLeaf的第一个儿子</li>
+            <li>afterLeaf的第一个儿子</li>
+            <li>afterLeaf的第一个儿子</li>
+        </ul>
+        <p>
+            <span>afterLeaf的第二个儿子</span>  
+        </p>
+        <p>
+            <span>afterLeaf的第三个儿子</span>  
+        </p>
+    </div>
+    <button id="btn">添加</button>
+    <script>
+        // //立方阶时间复杂度 O(n^3) 详解
+        // var n = 10;
+        // var s = 0;
+        // for(var i = 1; i <= n; i++){
+        //     for(var j = 1; j <= i; j++){
+        //         for(var k = 1; k <= j; k++){
+        //             s++
+        //             console.log(s)
+        //         }
+        //     }
+        // }                         // n    n的一次方  n的二次方
+        // // 当n = 10 时，s的结果是220  10 × （10+1） × （10+2）÷ 6   即 n(n+1)(n+2) ÷ 6 ，而不是 n(n+1)(2n+1)÷6 = 55
+
+        let before= document.getElementById('beforeLeaf');
+        let after = document.getElementById('afterLeaf') 
+        let btn = document.getElementById('btn')
+        let result = [];
+        // 比较叶子节点
+        const diffLeafs = function (beforeLeaf, afterLeaf) {       
+
+            // 查看元素
+            // console.log(beforeLeaf,afterLeaf)
+            // console.log(beforeLeaf.children.length,"2",afterLeaf.children.length,"3")
+
+            // 获取较大节点树的长度 Math.max取数组中最大的值
+            let count = Math.max(beforeLeaf.children.length , afterLeaf.children.length);
+            console.log(count)
+
+            // 循环遍历
+            for (let i = 0; i < count; i++) {
+                let beforeTag = beforeLeaf.children[i];
+                let afterTag = afterLeaf.children[i];
+                // console.log('62',beforeTag)
+                // console.log('63',afterTag)
+  
+                if (beforeTag === undefined) { // 添加 afterTag 节点       
+                    result.push({ type: "add", element: afterTag });
+                    console.log('67',result)
+                    
+                } else if (afterTag === undefined) { // 删除 beforeTag 节点
+                    result.push({ type: "remove", element: beforeTag });
+                    console.log('71',result)
+
+                } else if (beforeTag.tagName !== afterTag.tagName) { // 节点名改变时，删除 beforeTag 节点，添加 afterTag 节点
+                    result.push({ type: "remove", element: beforeTag });
+                    result.push({ type: "add", element: afterTag });
+                    console.log('76',result)
+
+                } else if (beforeTag.innerHTML !== afterTag.innerHTML) { // 节点不变而内容改变时，改变节点
+                    if (beforeTag.children.length === 0) {
+                        result.push({
+                            type: "changed",
+                            beforeElement: beforeTag,
+                            afterElement: afterTag,
+                            html: afterTag.innerHTML
+                        });
+                        console.log('86',result)
+                    } else {
+                        // 递归比较
+                        diffLeafs(beforeTag, afterTag);
+                    }
+                }
+            }
+            console.log('93',result)
+            return result;
+        };
+       
+
+        btn.onclick=function(){
+            let p = document.createElement('p');
+            p.innerHTML = "添加了一个子节点"
+            after.appendChild(p)
+
+            diffLeafs(before,after)
+        }
+        
+</script>
+</body>
+</html>
